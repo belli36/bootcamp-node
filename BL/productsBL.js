@@ -5,7 +5,8 @@ const persons = [{ id: 1, name: "Avi", age: 20 },
 
 const jfile = require('jsonfile');
 const Products = require('../models/product');
-const a=500;
+const { sendMailToNewMember } = require('./sendEmail');
+const a = 500;
 const getAll = () => {
     return new Promise((resolve, reject) => {
         console.log("in get all");
@@ -23,15 +24,15 @@ const getById = (id) => {
 const create = (obj) => {
 
     return new Promise((resolve, reject) => {
-        console.log("It is done.");
+        console.log("It is done." + obj.image);
         resolve(Products.create(obj));
     })
 }
 
 const update = (id, obj) => {
     return new Promise((resolve, reject) => {
-        resolve(Products.findByIdAndUpdate(id, obj),(err)=>{
-            if(err){
+        resolve(Products.findByIdAndUpdate(id, obj), (err) => {
+            if (err) {
                 reject(err);
             }
         })
@@ -40,7 +41,7 @@ const update = (id, obj) => {
 
 const deleteProduct = (id) => {
     return new Promise((resolve, reject) => {
-        resolve( Products.findByIdAndDelete(id));
+        resolve(Products.findByIdAndDelete(id));
     })
 }
 
@@ -54,19 +55,35 @@ const deleteProduct = (id) => {
 //         }
 //     } )
 // }
-const kabala=(name,sum,address)=> {
+const recept = (name, sum, address) => {
     console.log('belli');
-    console.log(name,sum,address);
+    console.log(name, sum, address);
     const doc = new PDFDocument();
-    doc.pipe(fs.createWriteStream(name + ' recept of shoes.pdf'));
+    doc.pipe(fs.createWriteStream('recept from event click.pdf'));
     doc
         .fontSize(27)
         // .text('This the article for GeeksforGeeks', 100, 100)
-        .text(name+' recept')
-        .text('address:'+address)
-        .text('price:' + sum)
-        // .text('quantity:')
+        .text('recept from event click')
+        .text('name: '+name)
+        .text('address: ' + address)
+        // .text('email: ')
+        // .circle(8, 9, 6)
+        // .text(.link(8,9,7,7,"https://b-set.co.il/%D7%A2%D7%99%D7%A6%D7%95%D7%91-%D7%94%D7%91%D7%99%D7%AA-%D7%A1%D7%9C%D7%95%D7%9F/"))
+        .text('total: ' + sum)
+        .image('לוגו פרויקט.png', {
+            fit: [300, 300],
+            align: 'center',
+            valign: 'center'
+        })
+        //   doc
+        .fillColor('blue')
+        .text('The link for my website', 100, 200)
+
+        .link(100, 200, 160, 27, 'http://localhost:3000/my-app');
+    //   
+
+    // .text('quantity:')
     doc.end();
     console.log("pdf success");
 }
-module.exports = { create, getById, getAll,update,deleteProduct ,kabala}
+module.exports = { create, getById, getAll, update, deleteProduct, recept }

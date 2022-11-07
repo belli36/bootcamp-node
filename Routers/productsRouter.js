@@ -4,10 +4,12 @@ const express = require('express')
 const router = express.Router();
 const productBL = require('../BL/productsBL');
 const auth = require('../middleware/auth.middleware');
+const { sendMailToNewMember } = require('../BL/sendEmail');
+
 
 // let a = 600;
 router.route('/')
-    .get(auth,async function (req, res) {
+    .get(/*auth,*/async function (req, res) {
         //console.log(a);
         let data = await productBL.getAll();
         return res.json(data);
@@ -24,6 +26,7 @@ router.route('/:id')
 router.route('/')
     .post(/*auth,*/ async function (req, res) {
         let obj = req.body
+        
         let data = await productBL.create(obj);
         return res.json(data);
     })
@@ -38,24 +41,32 @@ router.route('/:id')
     })
 
 router.route('/:id')
-    .delete(/*auth,*/ async function (req, resp) {
+    .delete(auth(['manager']),/*([manager]),*/ async function (req, resp) {
         console.log('delete delete')
         let id = req.params.id;
         let data = await productBL.deleteProduct(id);
         return resp.json(data);
     })
     
-router.route('/kabala/:name/:sum/:address')
+router.route('/recept/:name/:sum/:address/:email')
     .post( async function (req, resp) {
         let name=req.params.name;
         let sum = req.params.sum;
         let address = req.params.address;
-
-        
-        let data = await productBL.kabala(name,sum,address);
+        let email = req.params.email;
+        let data = await productBL.recept(name,sum,address);
+        // let data2=await sendEmail.sendMailToNewMember(email, name, address);
         return resp.json(data);
     })
-
+    router.route('/sendEmail/:name/:sum/:address/:email')
+    .post(async function (req, res) {
+        let name=req.params.name;
+        let sum = req.params.sum;
+        let address = req.params.address;
+        let email = req.params.email;
+        let data = await sendMailToNewMember(email, name, address);
+        return res.json(data);
+    })
 // router.route('/kabala')
 //     .post(async function () {
 //         console.log('belli');
